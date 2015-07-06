@@ -80,6 +80,14 @@ class ocsinventory (
   $pkg_list_server    = $::ocsinventory::params::pkg_list_server,
   $pkg_server_ensure  = $::ocsinventory::params::pkg_server_ensure,
   $server             = $::ocsinventory::params::server,
+  $db_host            = $::ocsinventory::params::db_host,
+  $db_port            = $::ocsinventory::params::db_port,
+  $db_name            = $::ocsinventory::params::db_name,
+  $db_local           = $::ocsinventory::params::db_local,
+  $db_user            = $::ocsinventory::params::db_user,
+  $db_pass            = $::ocsinventory::params::db_passs,
+  $config_httpd_user  = $::ocsinventory::params::httpd_user,
+  $config_httpd_group = $::ocsinventory::params::httpd_group,
 ) inherits ::ocsinventory::params {
   class { '::ocsinventory::install': } ->
   class { '::ocsinventory::config': } ->

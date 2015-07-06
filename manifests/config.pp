@@ -5,6 +5,12 @@ class ocsinventory::config (
   $agent_ocs_pause  = $::ocsinventory::agent_ocs_pause,
   $agent_ocs_server = $::ocsinventory::agent_ocs_server,
   $agent_ocs_tag    = $::ocsinventory::agent_ocs_tag,
+  $db_host          = $::ocsinventory::db_host,
+  $db_port          = $::ocsinventory::db_port,
+  $db_name          = $::ocsinventory::db_name,
+  $db_local         = $::ocsinventory::db_local,
+  $db_user          = $::ocsinventory::db_user,
+  $db_pass          = $::ocsinventory::db_pass,
 ) {
   File {
     group   => $::ocsinventory::config_group,
@@ -71,6 +77,19 @@ class ocsinventory::config (
       "${::ocsinventory::config_dir}/apache2-server.conf.example":
         ensure  => file,
         content => template("ocsinventory/server.${::osfamily}.conf.erb");
+    }
+    if $::osfamily == 'Debian' {
+      file { "${::ocsinventory::params::deploy_reports_dir}/dbconfig.inc.php":
+          ensure  => file,
+          content => template('ocsinventory/reports.Debian.dbconfig.inc.php.erb'),
+          owner   => $::ocsinventory::config_httpd_user,
+          group   => $::ocsinventory::config_httpd_group,
+        }
+      exec { "rm install.php":
+        command => "rm ${::ocsinventory::params::deploy_reports_dir}/install.php",
+        onlyif  => ["test -f ${::ocsinventory::params::deploy_reports_dir}/install.php",
+                    "mysql -u $db_user -p$db_pass -h $db_host -P $db_port $db_name -e 'show tables' | grep -q config"]
+      }
     }
   }
 }
